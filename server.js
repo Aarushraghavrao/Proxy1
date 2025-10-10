@@ -87,7 +87,7 @@ app.get("/", (req, res) => {
         <input id="urlInput" type="text" placeholder="Enter a website URL..." />
         <button onclick="loadSite()">Go</button>
       </div>
-      <iframe id="viewer" src="about:blank" height="500px"></iframe>
+    
       <footer>Made by Aarush • Powered by Render</footer>
 
       <script>
@@ -95,7 +95,8 @@ app.get("/", (req, res) => {
           const url = document.getElementById('urlInput').value.trim();
           if (!url) return alert("Please enter a URL first!");
           const encoded = encodeURIComponent(url.startsWith('http') ? url : 'https://' + url);
-          document.getElementById('viewer').src = '/proxy?url=' + encoded;
+          window.location.href = '/proxy?url=' + encoded;
+
         }
 
         // ✨ Animated background stars
