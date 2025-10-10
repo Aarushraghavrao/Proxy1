@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🌈 Styled homepage
+// Serve the homepage with a dark mode theme + animated background + search bar
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -12,74 +12,123 @@ app.get("/", (req, res) => {
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Proxy Server Online</title>
+      <title>Aarush Proxy</title>
       <style>
+        * {
+          box-sizing: border-box;
+        }
         body {
-          font-family: 'Segoe UI', Arial, sans-serif;
-          background: linear-gradient(135deg, #007BFF, #00C6FF);
-          color: white;
+          margin: 0;
+          height: 100vh;
           display: flex;
           flex-direction: column;
-          align-items: center;
           justify-content: center;
-          height: 100vh;
-          text-align: center;
-          margin: 0;
+          align-items: center;
+          background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+          font-family: "Poppins", sans-serif;
+          color: white;
+          overflow: hidden;
         }
         h1 {
           font-size: 2.5rem;
           margin-bottom: 10px;
+          text-shadow: 0 0 10px #00c6ff;
         }
         p {
-          font-size: 1.2rem;
-          max-width: 600px;
-          line-height: 1.6;
+          color: #ccc;
+          margin-bottom: 25px;
         }
-        code {
-          background: rgba(255,255,255,0.2);
-          padding: 3px 6px;
-          border-radius: 4px;
+        .search-box {
+          display: flex;
+          width: 80%;
+          max-width: 500px;
         }
-        a {
-          color: #fff;
-          text-decoration: none;
-          background: rgba(255,255,255,0.2);
-          padding: 8px 15px;
-          border-radius: 5px;
-          transition: all 0.3s ease;
+        input {
+          flex: 1;
+          padding: 10px 15px;
+          border: none;
+          outline: none;
+          border-radius: 5px 0 0 5px;
+          font-size: 1rem;
         }
-        a:hover {
-          background: rgba(255,255,255,0.4);
+        button {
+          background: #00c6ff;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 0 5px 5px 0;
+          color: white;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+        button:hover {
+          background: #0099cc;
+        }
+        canvas {
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: -1;
         }
         footer {
           position: absolute;
-          bottom: 20px;
+          bottom: 15px;
+          color: #aaa;
           font-size: 0.9rem;
-          opacity: 0.8;
         }
       </style>
     </head>
     <body>
-      <h1>✅ Proxy Server is Live!</h1>
-      <p>
-        To use this proxy, append 
-        <code>/proxy?url=https://example.com</code> 
-        to the end of the URL.
-      </p>
-      <p>
-        Example:
-        <br />
-        <a href="/proxy?url=https://example.com" target="_blank">
-          Try Proxy with Example.com
-        </a>
-      </p>
-      <footer>Powered by Render | Created by Aarush</footer>
+      <canvas id="bg"></canvas>
+      <h1>🌐 Aarush Proxy</h1>
+      <p>Enter any website URL to browse through this proxy:</p>
+      <div class="search-box">
+        <input id="urlInput" type="text" placeholder="https://example.com" />
+        <button onclick="go()">Go</button>
+      </div>
+      <footer>Created by Aarush | Powered by Render</footer>
+      <script>
+        function go() {
+          const url = document.getElementById('urlInput').value.trim();
+          if (!url) return alert("Please enter a URL first!");
+          const encoded = encodeURIComponent(url.startsWith('http') ? url : 'https://' + url);
+          window.location.href = '/proxy?url=' + encoded;
+        }
+
+        // Animated background
+        const c = document.getElementById("bg");
+        const ctx = c.getContext("2d");
+        c.width = innerWidth;
+        c.height = innerHeight;
+        const stars = Array.from({ length: 80 }, () => ({
+          x: Math.random() * c.width,
+          y: Math.random() * c.height,
+          r: Math.random() * 2,
+          dx: (Math.random() - 0.5) * 0.5,
+          dy: (Math.random() - 0.5) * 0.5,
+        }));
+        function animate() {
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.fillStyle = "#00c6ff";
+          stars.forEach((s) => {
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
+            s.x += s.dx;
+            s.y += s.dy;
+            if (s.x < 0 || s.x > c.width) s.dx *= -1;
+            if (s.y < 0 || s.y > c.height) s.dy *= -1;
+          });
+          requestAnimationFrame(animate);
+        }
+        animate();
+      </script>
     </body>
     </html>
   `);
 });
 
-// 🚀 Proxy route
+// 🔗 Proxy route
 app.get("/proxy", async (req, res) => {
   const targetUrl = req.query.url;
   if (!targetUrl) return res.status(400).send("❌ Missing ?url= parameter");
@@ -93,5 +142,5 @@ app.get("/proxy", async (req, res) => {
   }
 });
 
-// 🔊 Start server
-app.listen(PORT, () => console.log(`✅ Proxy running on port ${PORT}`));
+// ✅ Start the server
+app.listen(PORT, () => console.log(\`✅ Proxy running on port \${PORT}\`));
