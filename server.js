@@ -146,4 +146,5 @@ app.get("/proxy", async (req, res) => {
 });
 
 // 🚀 Start server
-app.listen(PORT, () => console.log(\`✅ Proxy running on port \${PORT}\`));
+app.listen(PORT, () => console.log(`
+
