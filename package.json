@@ -1,7 +1,8 @@
+
 {
   "name": "proxy1",
   "version": "1.0.0",
-  "description": "",
+  "description": "Aarush proxy",
   "main": "server.js",
   "type": "module",
   "scripts": {
