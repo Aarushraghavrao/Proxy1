@@ -165,7 +165,20 @@ app.get("/", (req, res) => {
     <button id="goBtn">Go</button>
   </div>
 
-  <div class="bookmarks">
+  <div class="bookmarks"><!-- 🧱 Adsterra Ad Box -->
+<div id="adBox" style="margin: 20px auto; text-align:center;">
+  <script type="text/javascript">
+    atOptions = {
+      'key' : '2ea2555e5d01192d37a8ab164c584771',
+      'format' : 'iframe',
+      'height' : 250,
+      'width' : 300,
+      'params' : {}
+    };
+  </script>
+  <script type="text/javascript" src="//www.highperformanceformat.com/2ea2555e5d01192d37a8ab164c584771/invoke.js"></script>
+</div>
+
     <a class="bookmark" href="/proxy?url=https://crazygames.com">🎮 CrazyGames</a>
     <a class="bookmark" href="/proxy?url=https://discord.com">💬 Discord</a>
     <a class="bookmark" href="/proxy?url=https://web.whatsapp.com">📱 WhatsApp</a>
