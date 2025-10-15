@@ -9,20 +9,48 @@ app.get("/", (req, res) => {
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Rocks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rocks Proxy</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Poppins', sans-serif;
-    background: var(--bg, #000000);
     color: white;
+    overflow-x: hidden;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: background 0.4s ease;
+  }
+
+  /* 🔥 Animated glowing gradient background */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 20% 30%, #0f2027 0%, #203a43 30%, #2c5364 80%);
+    animation: pulse 10s infinite alternate ease-in-out;
+    z-index: -2;
+  }
+  @keyframes pulse {
+    0% { filter: hue-rotate(0deg) brightness(1); }
+    100% { filter: hue-rotate(60deg) brightness(1.2); }
+  }
+
+  /* Floating orbs for energy feel */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,255,0.4), transparent 70%);
+    animation: float 20s infinite ease-in-out;
+    z-index: -1;
+  }
+  .orb:nth-child(1) { width: 200px; height: 200px; top: 20%; left: 15%; animation-delay: 0s; }
+  .orb:nth-child(2) { width: 300px; height: 300px; bottom: 10%; right: 20%; animation-delay: 5s; }
+  .orb:nth-child(3) { width: 150px; height: 150px; bottom: 30%; left: 40%; animation-delay: 10s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
   }
 
   header {
@@ -31,31 +59,28 @@ app.get("/", (req, res) => {
     justify-content: space-between;
     align-items: center;
     padding: 20px 40px;
-    background: rgba(20,20,20,0.7);
+    background: rgba(20,20,20,0.6);
+    backdrop-filter: blur(10px);
     box-shadow: 0 0 10px rgba(0,198,255,0.3);
   }
 
   h1 {
     font-size: 2rem;
-    text-shadow: 0 0 10px #00c6ff;
-    font-weight: 600;
+    text-shadow: 0 0 12px #00c6ff;
   }
 
   .settings-btn {
     background: rgba(255,255,255,0.1);
     border: none;
     border-radius: 50%;
-    width: 48px;
-    height: 48px;
+    width: 45px;
+    height: 45px;
     color: #00c6ff;
     font-size: 1.4rem;
     cursor: pointer;
     transition: transform 0.3s;
   }
-
-  .settings-btn:hover {
-    transform: rotate(20deg);
-  }
+  .settings-btn:hover { transform: rotate(25deg); }
 
   .search-box {
     margin: 25px 0;
@@ -63,7 +88,6 @@ app.get("/", (req, res) => {
     width: 90%;
     max-width: 600px;
   }
-
   input {
     flex: 1;
     padding: 12px 15px;
@@ -74,7 +98,6 @@ app.get("/", (req, res) => {
     background: rgba(255,255,255,0.08);
     color: white;
   }
-
   button {
     background: #00c6ff;
     border: none;
@@ -83,100 +106,55 @@ app.get("/", (req, res) => {
     color: white;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.3s;
   }
-
-  button:hover {
-    background: #0099cc;
-  }
+  button:hover { background: #0099cc; }
 
   .bookmarks {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     justify-content: center;
-    margin: 20px 0 40px;
+    margin: 25px;
   }
-
   .bookmark {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.1);
     border-radius: 10px;
     padding: 12px 18px;
     color: #00c6ff;
     text-decoration: none;
-    font-weight: 500;
-    transition: background 0.3s, transform 0.2s;
+    transition: 0.3s;
   }
-
   .bookmark:hover {
-    background: rgba(0,198,255,0.2);
+    background: rgba(0,198,255,0.3);
     transform: scale(1.05);
   }
 
   footer {
-    margin-top: auto;
-    padding: 15px;
     color: #ccc;
-    font-size: 0.9rem;
+    margin: auto 0 20px;
   }
 
-  /* Slide-in settings panel */
+  /* Settings panel */
   #settingsPanel {
     position: fixed;
-    top: 0;
-    right: -400px;
-    width: 320px;
+    top: 0; right: -400px;
+    width: 300px;
     height: 100%;
     background: rgba(10,10,20,0.95);
-    backdrop-filter: blur(10px);
     border-left: 2px solid #00c6ff;
-    box-shadow: -2px 0 10px rgba(0,198,255,0.3);
     padding: 20px;
     transition: right 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    z-index: 10;
   }
-
   #settingsPanel.open { right: 0; }
-
   #settingsPanel h2 {
     text-align: center;
     text-shadow: 0 0 10px #00c6ff;
   }
-
-  select, input[type="color"], button.save {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-  }
-
-  button.save {
-    background: #00c6ff;
-    color: white;
-    cursor: pointer;
-  }
-
-  button.save:hover {
-    background: #0099cc;
-  }
-
-  .close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 1.2rem;
-    background: none;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-  }
+  .close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: white; cursor: pointer; }
 </style>
 </head>
 <body>
+  <div class="orb"></div><div class="orb"></div><div class="orb"></div>
   <header>
     <h1>🪨 Rocks</h1>
     <button class="settings-btn" id="openSettings">⚙️</button>
@@ -188,12 +166,11 @@ app.get("/", (req, res) => {
   </div>
 
   <div class="bookmarks">
-    <a class="bookmark" href="/proxy?url=https://www.crazygames.com">🎮 CrazyGames</a>
+    <a class="bookmark" href="/proxy?url=https://crazygames.com">🎮 CrazyGames</a>
     <a class="bookmark" href="/proxy?url=https://discord.com">💬 Discord</a>
     <a class="bookmark" href="/proxy?url=https://web.whatsapp.com">📱 WhatsApp</a>
-    <a class="bookmark" href="/proxy?url=https://www.youtube.com">▶️ YouTube</a>
-    <a class="bookmark" href="/proxy?url=https://www.github.com">💻 GitHub</a>
-    <a class="bookmark" href="/proxy?url=https://www.wikipedia.org">📚 Wikipedia</a>
+    <a class="bookmark" href="/proxy?url=https://youtube.com">▶️ YouTube</a>
+    <a class="bookmark" href="/proxy?url=https://github.com">💻 GitHub</a>
     <a class="bookmark" href="/proxy?url=https://mail.google.com">📧 Gmail</a>
   </div>
 
@@ -201,20 +178,9 @@ app.get("/", (req, res) => {
 
   <div id="settingsPanel">
     <button class="close" id="closeSettings">✖</button>
-    <h2>⚙️ Settings</h2>
-    <label>Choose a preset background:</label>
-    <select id="presetSelect">
-      <option value="#000000">Default (Black)</option>
-      <option value="linear-gradient(135deg,#0f2027,#203a43,#2c5364)">Ocean Blue</option>
-      <option value="linear-gradient(135deg,#ff7e5f,#feb47b)">Sunset</option>
-      <option value="linear-gradient(135deg,#1a1a2e,#16213e)">Dark Space</option>
-      <option value="linear-gradient(135deg,#0f0c29,#302b63,#24243e)">Violet Nights</option>
-    </select>
-
-    <label>Pick a custom color:</label>
-    <input type="color" id="colorPicker" value="#000000">
-
-    <button class="save" id="saveSettings">Save</button>
+    <h2>Settings</h2>
+    <label>Change background hue:</label>
+    <input type="range" id="hueSlider" min="0" max="360" />
   </div>
 
 <script>
@@ -223,15 +189,9 @@ app.get("/", (req, res) => {
   const panel = document.getElementById("settingsPanel");
   const openSettings = document.getElementById("openSettings");
   const closeSettings = document.getElementById("closeSettings");
-  const presetSelect = document.getElementById("presetSelect");
-  const colorPicker = document.getElementById("colorPicker");
-  const saveBtn = document.getElementById("saveSettings");
+  const hueSlider = document.getElementById("hueSlider");
 
-  // Apply saved background
-  const savedBg = localStorage.getItem("rocks-bg");
-  if (savedBg) document.body.style.setProperty("--bg", savedBg);
-
-  goBtn.addEventListener("click", navigate);
+  goBtn.onclick = navigate;
   urlInput.addEventListener("keydown", e => { if (e.key === "Enter") navigate(); });
 
   function navigate() {
@@ -244,15 +204,9 @@ app.get("/", (req, res) => {
   openSettings.onclick = () => panel.classList.add("open");
   closeSettings.onclick = () => panel.classList.remove("open");
 
-  presetSelect.onchange = () => { document.body.style.setProperty("--bg", presetSelect.value); }
-  colorPicker.oninput = () => { document.body.style.setProperty("--bg", colorPicker.value); }
-
-  saveBtn.onclick = () => {
-    const bg = document.body.style.getPropertyValue("--bg");
-    localStorage.setItem("rocks-bg", bg);
-    alert("✅ Background saved!");
-    panel.classList.remove("open");
-  }
+  hueSlider.oninput = () => {
+    document.body.style.filter = \`hue-rotate(\${hueSlider.value}deg)\`;
+  };
 </script>
 </body>
 </html>`);
@@ -263,13 +217,11 @@ app.get("/proxy", async (req, res) => {
   if (!targetUrl) return res.status(400).send("❌ Missing ?url= parameter");
   try {
     const response = await fetch(targetUrl);
-    const type = response.headers.get("content-type") || "text/html";
     const data = await response.text();
-    res.set("Content-Type", type);
     res.send(data);
   } catch (error) {
     res.status(500).send("Proxy error: " + error.message);
   }
 });
 
-app.listen(PORT, () => console.log(\`🚀 Rocks running on port \${PORT}\`));
+app.listen(PORT, () => console.log(`🚀 Rocks Proxy running on port ${PORT}`));
