@@ -9,24 +9,25 @@ app.get("/", (req, res) => {
   <!DOCTYPE html>
   <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocks Proxy</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🌐 Rocks Proxy</title>
     <style>
       * { box-sizing: border-box; }
       body {
         margin: 0;
         height: 100vh;
-        background: #000;
-        font-family: 'Poppins', sans-serif;
+        font-family: "Poppins", sans-serif;
         color: #fff;
+        background: var(--bg-color, #000);
         display: flex;
         flex-direction: column;
         align-items: center;
         overflow: hidden;
+        transition: background 0.5s;
       }
       h1 {
-        margin: 20px 0 10px;
+        margin-top: 20px;
         font-size: 2.4rem;
         text-shadow: 0 0 10px #00c6ff;
       }
@@ -104,6 +105,39 @@ app.get("/", (req, res) => {
         color: #ccc;
         font-size: 0.9rem;
       }
+      #settingsModal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.9);
+        border: 2px solid #00c6ff;
+        border-radius: 10px;
+        padding: 20px;
+        z-index: 10;
+        color: white;
+      }
+      #settingsModal h2 {
+        margin-top: 0;
+      }
+      #settingsModal input[type="color"] {
+        margin-top: 10px;
+        width: 100%;
+        height: 40px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      #settingsModal button {
+        margin-top: 15px;
+        background: #00c6ff;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        color: #000;
+        cursor: pointer;
+      }
       canvas {
         position: fixed;
         top: 0;
@@ -116,7 +150,7 @@ app.get("/", (req, res) => {
     <canvas id="bg"></canvas>
     <div class="top-bar">
       <h1>🌐 Rocks Proxy</h1>
-      <button class="settings-btn" onclick="alert('Settings page coming soon!')">⚙️ Settings</button>
+      <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
     </div>
     <div class="search-box">
       <input id="urlInput" type="text" placeholder="Enter a website URL..." />
@@ -129,10 +163,18 @@ app.get("/", (req, res) => {
       <a class="bookmark" href="#" onclick="openLink('https://youtube.com')">YouTube</a>
       <a class="bookmark" href="#" onclick="openLink('https://google.com')">Google</a>
     </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal">
+      <h2>🎨 Customize Background</h2>
+      <input type="color" id="colorPicker" />
+      <button onclick="saveSettings()">Save</button>
+    </div>
+
     <footer>Made by Aarush Rao • Hosted on Vercel</footer>
 
     <script>
-      // Open in a new tab instead of iframe
+      // open site in new tab
       function loadSite() {
         const input = document.getElementById('urlInput').value.trim();
         if (!input) return alert('Please enter a URL!');
@@ -148,51 +190,28 @@ app.get("/", (req, res) => {
         if (e.key === 'Enter') loadSite();
       });
 
-      // ✨ Animated background
+      // background color logic
+      function toggleSettings() {
+        const modal = document.getElementById('settingsModal');
+        modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+      }
+
+      function saveSettings() {
+        const color = document.getElementById('colorPicker').value;
+        document.body.style.setProperty('--bg-color', color);
+        localStorage.setItem('bgColor', color);
+        toggleSettings();
+      }
+
+      window.addEventListener('load', () => {
+        const savedColor = localStorage.getItem('bgColor');
+        if (savedColor) {
+          document.body.style.setProperty('--bg-color', savedColor);
+        }
+      });
+
+      // animated stars
       const c = document.getElementById("bg");
       const ctx = c.getContext("2d");
       c.width = innerWidth;
-      c.height = innerHeight;
-      const stars = Array.from({ length: 100 }, () => ({
-        x: Math.random() * c.width,
-        y: Math.random() * c.height,
-        r: Math.random() * 2,
-        dx: (Math.random() - 0.5) * 0.5,
-        dy: (Math.random() - 0.5) * 0.5,
-      }));
-      function animate() {
-        ctx.clearRect(0, 0, c.width, c.height);
-        ctx.fillStyle = "#00c6ff";
-        stars.forEach(s => {
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fill();
-          s.x += s.dx;
-          s.y += s.dy;
-          if (s.x < 0 || s.x > c.width) s.dx *= -1;
-          if (s.y < 0 || s.y > c.height) s.dy *= -1;
-        });
-        requestAnimationFrame(animate);
-      }
-      animate();
-    </script>
-  </body>
-  </html>
-  `);
-});
-
-// Proxy route
-app.get("/proxy", async (req, res) => {
-  const targetUrl = req.query.url;
-  if (!targetUrl) return res.status(400).send("❌ Missing ?url= parameter");
-
-  try {
-    const response = await fetch(targetUrl);
-    const data = await response.text();
-    res.send(data);
-  } catch (err) {
-    res.status(500).send("Proxy error: " + err.message);
-  }
-});
-
-app.listen(PORT, () => console.log(\`✅ Rocks Proxy running on port \${PORT}\`));
+      c.height =
