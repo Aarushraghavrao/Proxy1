@@ -1,7 +1,6 @@
 {
-  "name": "rocksproxy",
+  "name": "rocks-proxy",
   "version": "1.0.0",
-  "description": "Simple web proxy",
   "main": "server.js",
   "type": "module",
   "scripts": {
