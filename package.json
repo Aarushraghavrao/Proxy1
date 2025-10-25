@@ -1,8 +1,7 @@
-
 {
-  "name": "proxy1",
+  "name": "rocksproxy",
   "version": "1.0.0",
-  "description": "Aarush proxy",
+  "description": "Simple web proxy",
   "main": "server.js",
   "type": "module",
   "scripts": {
