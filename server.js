@@ -152,8 +152,6 @@ app.get("/", (req, res) => {
         left: 0;
         z-index: -1;
       }
-
-      /* 📱 Responsive Fixes */
       @media (max-width: 600px) {
         h1 {
           font-size: 1.7rem;
@@ -232,7 +230,6 @@ app.get("/", (req, res) => {
         }
       });
 
-      // 🌠 Animated star background
       const c = document.getElementById("bg");
       const ctx = c.getContext("2d");
       c.width = innerWidth;
@@ -265,11 +262,10 @@ app.get("/", (req, res) => {
   `);
 });
 
-// 🔁 Proxy route
+// Proxy route
 app.get("/proxy", async (req, res) => {
   const targetUrl = req.query.url;
   if (!targetUrl) return res.status(400).send("❌ Missing ?url= parameter");
-
   try {
     const response = await fetch(targetUrl);
     const data = await response.text();
