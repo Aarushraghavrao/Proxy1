@@ -4,7 +4,6 @@ import fetch from "node-fetch";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Home page
 app.get("/", (req, res) => {
   res.send(`
   <!DOCTYPE html>
@@ -18,7 +17,7 @@ app.get("/", (req, res) => {
       body {
         margin: 0;
         height: 100vh;
-        background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+        background: #000;
         font-family: 'Poppins', sans-serif;
         color: #fff;
         display: flex;
@@ -50,7 +49,7 @@ app.get("/", (req, res) => {
       }
       .settings-btn:hover {
         background: #00c6ff;
-        color: #fff;
+        color: #000;
       }
       .search-box {
         margin: 10px 0;
@@ -99,16 +98,8 @@ app.get("/", (req, res) => {
         background: #00c6ff;
         color: black;
       }
-      iframe {
-        flex: 1;
-        width: 90%;
-        max-width: 1200px;
-        border: 2px solid #00c6ff;
-        border-radius: 10px;
-        background: white;
-        margin-bottom: 10px;
-      }
       footer {
+        margin-top: auto;
         margin-bottom: 10px;
         color: #ccc;
         font-size: 0.9rem;
@@ -125,7 +116,7 @@ app.get("/", (req, res) => {
     <canvas id="bg"></canvas>
     <div class="top-bar">
       <h1>🌐 Rocks Proxy</h1>
-      <button class="settings-btn" onclick="alert('Settings will be added soon!')">⚙️ Settings</button>
+      <button class="settings-btn" onclick="alert('Settings page coming soon!')">⚙️ Settings</button>
     </div>
     <div class="search-box">
       <input id="urlInput" type="text" placeholder="Enter a website URL..." />
@@ -138,31 +129,31 @@ app.get("/", (req, res) => {
       <a class="bookmark" href="#" onclick="openLink('https://youtube.com')">YouTube</a>
       <a class="bookmark" href="#" onclick="openLink('https://google.com')">Google</a>
     </div>
-    <iframe id="viewer" src="about:blank"></iframe>
     <footer>Made by Aarush Rao • Hosted on Vercel</footer>
 
     <script>
+      // Open in a new tab instead of iframe
       function loadSite() {
         const input = document.getElementById('urlInput').value.trim();
-        if (!input) return alert('Please enter a URL first!');
+        if (!input) return alert('Please enter a URL!');
         const url = input.startsWith('http') ? input : 'https://' + input;
-        document.getElementById('viewer').src = '/proxy?url=' + encodeURIComponent(url);
+        window.open('/proxy?url=' + encodeURIComponent(url), '_blank');
       }
 
       function openLink(link) {
-        document.getElementById('viewer').src = '/proxy?url=' + encodeURIComponent(link);
+        window.open('/proxy?url=' + encodeURIComponent(link), '_blank');
       }
 
       document.getElementById('urlInput').addEventListener('keypress', e => {
         if (e.key === 'Enter') loadSite();
       });
 
-      // ✨ Animated background stars
+      // ✨ Animated background
       const c = document.getElementById("bg");
       const ctx = c.getContext("2d");
       c.width = innerWidth;
       c.height = innerHeight;
-      const stars = Array.from({ length: 80 }, () => ({
+      const stars = Array.from({ length: 100 }, () => ({
         x: Math.random() * c.width,
         y: Math.random() * c.height,
         r: Math.random() * 2,
@@ -172,7 +163,7 @@ app.get("/", (req, res) => {
       function animate() {
         ctx.clearRect(0, 0, c.width, c.height);
         ctx.fillStyle = "#00c6ff";
-        stars.forEach((s) => {
+        stars.forEach(s => {
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
           ctx.fill();
@@ -194,6 +185,7 @@ app.get("/", (req, res) => {
 app.get("/proxy", async (req, res) => {
   const targetUrl = req.query.url;
   if (!targetUrl) return res.status(400).send("❌ Missing ?url= parameter");
+
   try {
     const response = await fetch(targetUrl);
     const data = await response.text();
@@ -203,5 +195,4 @@ app.get("/proxy", async (req, res) => {
   }
 });
 
-// Start server
 app.listen(PORT, () => console.log(\`✅ Rocks Proxy running on port \${PORT}\`));
